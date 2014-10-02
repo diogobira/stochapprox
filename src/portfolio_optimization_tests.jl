@@ -40,14 +40,50 @@ main_objectiveFun(new_root, strategy)
 strategy = [0 1; 0 1; 0 1; 0 1]
 main_objectiveFun(new_root, strategy)
 
+## somes tests with dual numbers
+#strategy = [Dual(0.5,1) Dual(0.5,1); Dual(0.5,1) Dual(0.5,1); Dual(0.5,1) Dual(0.5,1); Dual(0.5,1) Dual(0.5,1)]
+#main_objectiveFun(new_root, strategy)
+
+
 #################################################
 ## Optimization!
 #################################################
 
 ### reference example: https://github.com/JuliaOpt/NLopt.jl
-
 using JuMP
 using NLopt
+
+####
+
+# The solver
+o = Opt(:LN_COBYLA, 8)
+
+# Objective function
+function g(x::Vector, grad::Vector)
+	strategy = [x[1] x[2]; x[3] x[4]; x[5] x[6]; x[7] x[8]]
+	return main_objectiveFun(new_root, strategy)	
+end
+
+# Eq. Contraints Function
+function eq_constraints(result::Vector, x::Vector, grad::Matrix)
+	result[1] = x[1]+x[2]-1
+	result[2] = x[3]+x[4]-1		
+	result[3] = x[5]+x[6]-1	
+	result[4] = x[7]+x[8]-1	
+end
+
+max_objective!(o, g)
+equality_constraint!(o, eq_constraints, [1.0e-3 for i=1:4])
+lower_bounds!(o, [0, 0, 0, 0, 0, 0, 0, 0])
+upper_bounds!(o, [1, 1, 1, 1, 1, 1, 1, 1])
+maxeval!(o, 500)
+(optf,optx,ret) = optimize(o, [0.5 for i=1:8])
+
+
+
+
+
+
 
 # The solver
 m = Model(solver=NLoptSolver(algorithm=:LN_COBYLA))
@@ -88,31 +124,5 @@ setValue(wB4,0.5);
 # Solving the model!
 status = solve(m)
 
-####
-
-# The solver
-o = Opt(:LD_COBYLA,8)
-
-# Objective function
-function g(x::Vector, grad::Vector)
-	strategy = [x[1] x[2]; x[3] x[4]; x[5] x[6]; x[7] x[8]]
-	return main_objectiveFun(new_root, strategy)	
-end
-
-# Eq. Contraints Function
-function eq_constraints(result::Vector, x::Vector, grad::Matrix)
-	result[1] = x[1]+x[2]-1
-	result[2] = x[3]+x[4]-1		
-	result[3] = x[5]+x[6]-1	
-	result[4] = x[7]+x[8]-1	
-end
-
-max_objective!(o, g)
-equality_constraint!(o, eq_constraints, [1.0e-6 for i=1:4]')
-lower_bounds!(o, [0, 0, 0, 0, 0, 0, 0, 0])
-upper_bounds!(o, [1, 1, 1, 1, 1, 1, 1, 1])
-maxeval!(o, 500)
-
-(optf,optx,ret) = optimize(o, [0.5 for i=1:8])
 
 

@@ -17,7 +17,7 @@ type PathsTree
 	father::PathsTree
 	counter::Int64
 	prob::Float64
-	objectiveValue::Float64
+	objectiveValue
 	
 	## Constructors
 	
