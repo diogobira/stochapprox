@@ -1,6 +1,6 @@
 ###################################################################
 # Multistage Portfolio Optimization using Stochastic Approximation 
-# and Simmulated Annealing
+# and 
 ###################################################################
 
 ############################################
@@ -120,18 +120,6 @@ function normalized_euclidean_distance(v,w,params)
 	norm((v - w) ./ params[:sigmas])
 end
 
-function cosine_dist(x,y, params)
-	1 - sum(x.*y) / (norm(x) * norm(y))
-end
-
-function corr_dist(x, y, params)
-	cosine_dist(x - mean(x), y - mean(y), params)
-end
-
-function kl_divergence(x, y, params)
-	sum(x .* log(x ./ y))
-end
-
 ###############################################################
 ### Auxiliary Tree Creation/Manipulation/Search Functions
 ###############################################################
@@ -228,7 +216,7 @@ function get_all_paths(node::PathsTree, M::Array)
 end
 
 ## get_full_probs_from_leaf
-## Given a leaf, returns the probabilities of each node in the full path path backward recursivelly.
+## Given a leaf, returns the probabilities of each node in the full path backward recursivelly.
 function get_full_probs_from_leaf(leaf::PathsTree, probs)
 	push!(probs, leaf.prob)
 	if leaf.level!=1
@@ -342,7 +330,7 @@ function initialize_objectiveValues(node::PathsTree, strategy, level)
 			initialize_objectiveValues(node.childs[i], strategy, level+1)
 		end
 	
-	# On a non root node, compute the portfolio return using the asset
+	# At a non-root node, compute the portfolio return using the asset
 	# prices on the current and early stage, and then call recursively if
 	# we are not already on the last stage.
 	else
